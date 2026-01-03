@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:sentiric_assistant/services/audio_service.dart';
 import 'package:sentiric_assistant/services/websocket_service.dart';
 
@@ -13,7 +14,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
   final AudioService _audioService = AudioService();
-  final WebSocketService _webSocketService = WebSocketService(url: 'ws://10.0.2.2:18030/ws'); // Android emulator -> Host machine
+  // DİNAMİK URL
+  late final WebSocketService _webSocketService;
   
   StreamSubscription<Uint8List>? _micSubscription;
   StreamSubscription<dynamic>? _socketSubscription;
@@ -28,9 +30,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   @override
   void initState() {
     super.initState();
+    // .env'den URL'yi alarak servisi başlat
+    final gatewayUrl = dotenv.env['STREAM_GATEWAY_URL'] ?? 'ws://localhost:18030/ws';
+    _webSocketService = WebSocketService(url: gatewayUrl);
     _connect();
   }
-
+  
+  // ... Geri kalan kod aynı ...
   void _connect() async {
     await _audioService.requestMicPermission();
     _webSocketService.connect();
@@ -55,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     _isPlaying = true;
     final chunk = _audioQueue.removeAt(0);
     await _audioService.playChunk(chunk);
-    _playQueue(); // Recursive call to play next chunk
+    _playQueue();
   }
 
   void _toggleRecording() {

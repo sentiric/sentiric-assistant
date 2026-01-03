@@ -21,6 +21,8 @@ dependencies:
   audioplayers: ^5.2.1
   permission_handler: ^11.0.1
 
+  # Configuration Management (YENİ)
+  flutter_dotenv: ^5.1.0
 
 dev_dependencies:
   flutter_test:
@@ -29,3 +31,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  
+  # YENİ: .env dosyasını varlık olarak ekle
+  assets:
+    - .env
